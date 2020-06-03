@@ -488,6 +488,15 @@ abstract class Column
         return $this->size;
     }
 
+    public function initializeData()
+    {
+        $this->data = [
+            'operator' => $this->getDefaultOperator(),
+            'from' => static::DEFAULT_VALUE,
+            'to' => static::DEFAULT_VALUE,
+        ];
+    }
+
     /**
      * set filter data from session | request.
      *
@@ -497,7 +506,7 @@ abstract class Column
      */
     public function setData($data)
     {
-        $this->data = ['operator' => $this->getDefaultOperator(), 'from' => static::DEFAULT_VALUE, 'to' => static::DEFAULT_VALUE];
+        $this->initializeData();
 
         $hasValue = false;
         if (isset($data['from']) && $this->isQueryValid($data['from'])) {
@@ -525,6 +534,10 @@ abstract class Column
      */
     public function getData()
     {
+        if (!\is_array($this->data)) {
+            $this->initializeData();
+        }
+
         $result = [];
 
         $hasValue = false;
@@ -685,6 +698,10 @@ abstract class Column
 
     public function getFilters($source)
     {
+        if (!\is_array($this->data)) {
+            $this->initializeData();
+        }
+
         $filters = [];
 
         if ($this->hasOperator($this->data['operator'])) {
